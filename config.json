@@ -1,0 +1,57 @@
+{
+  "pageTitle": "",
+  "title": "توقعات المباريات",
+  "highlight": "توقعات كل يوم",
+  "showTag": true,
+  "subtitle": "انضم لقناتنا على تلجرام واستلم التوقعات قبل المباراة بوقت كافٍ",
+  "visual": "ball",
+  "logo": "",
+  "animations": true,
+  "adminUser": "1Earnmoney",
+  "promoLabel": "بروموكود التسجيل وخذ البونص",
+  "promoCode": "YOURCODE",
+  "showPromo": true,
+  "note": "+18 فقط. التوقعات للمتعة وليست ضماناً للربح، العب بمسؤولية.",
+  "support": {
+    "enabled": true,
+    "label": "تواصل مع الدعم",
+    "url": "https://t.me/YOUR_SUPPORT",
+    "icon": "support"
+  },
+  "colors": {
+    "accent": "#2f6bff",
+    "accent2": "#5ac8fa",
+    "bg": "#050b24",
+    "ink": "#ffffff"
+  },
+  "links": [
+    {
+      "id": "main",
+      "label": "اي رايك يدراجون",
+      "url": "https://t.me/REASASPORT",
+      "icon": "plane",
+      "main": true
+    },
+    {
+      "id": "vip",
+      "label": "قناة VIP",
+      "url": "https://t.me/YOUR_VIP_CHANNEL",
+      "icon": "vip",
+      "main": false
+    },
+    {
+      "id": "live",
+      "label": "التوقعات المباشرة",
+      "url": "https://t.me/YOUR_LIVE_CHANNEL",
+      "icon": "live",
+      "main": false
+    },
+    {
+      "id": "group",
+      "label": "قروب النقاش",
+      "url": "https://t.me/YOUR_GROUP",
+      "icon": "group",
+      "main": false
+    }
+  ]
+}
