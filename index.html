@@ -151,6 +151,7 @@ body[data-bg=waves] .waves{display:block}
 .wave.w2{opacity:.35;height:80%;color:var(--accent2);animation-duration:20s;animation-direction:reverse}
 .wave.w3{opacity:.25;height:60%;animation-duration:28s}
 @keyframes wv{to{transform:translateX(-50%)}}
+.pi{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-inline-end:6px;object-fit:contain}
 .tile .ico img{width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(255,255,255,.4))}
 .pill img{width:24px;height:24px;object-fit:contain;flex:none}
 .logo{position:absolute;left:50%;top:0;width:128px;height:128px;margin-left:-64px;object-fit:contain;filter:drop-shadow(0 14px 14px rgba(0,10,50,.5));animation:logofloat 4s ease-in-out infinite}
@@ -331,7 +332,11 @@ window.DEFAULTS = {
     document.body.style.color=c.ink;
     $("t-hl").textContent=cfg.highlight; $("t-title").textContent=cfg.title;
     $("t-sub").textContent=cfg.subtitle; var pic=(cfg.promoIcon==null?"🎁":String(cfg.promoIcon).trim());
-    $("t-promo").textContent=(pic?pic+" ":"")+cfg.promoLabel;
+    var tp=$("t-promo");tp.textContent="";
+    if(pic){var pn=iconNode({icon:pic},"em");
+      if(pn.tagName==="svg"||pn.tagName==="IMG"){pn.setAttribute("class","pi");tp.appendChild(pn)}
+      else tp.appendChild(document.createTextNode(pic+" "))}
+    tp.appendChild(document.createTextNode(cfg.promoLabel));
     setBg(["orbs","stars","particles","balls","waves","none"].indexOf(cfg.bgStyle)>-1?cfg.bgStyle:"balls");
     $("code").textContent=cfg.promoCode; $("t-note").textContent=cfg.note;
     document.title=cfg.pageTitle||cfg.title;
@@ -390,6 +395,11 @@ window.DEFAULTS = {
   // الجوال والصور
   var phKey="",phTimer=0;
   function showPhone(){
+    showPhone0();
+    var g=document.querySelector(".glass");
+    g.style.marginTop=!$("showcase").hidden?"":($("tiles").children.length?"":"-28px");
+  }
+  function showPhone0(){
     var P=Object.assign({mode:"phone",tilt:true,crop:true,speed:3.5,images:[]},cfg.phone||{});
     var sc=$("showcase"),scr=$("screen");
     var imgs=(P.images||[]).filter(function(u){return /^(https?:\/\/|assets\/[\w.\-]+$)/i.test(u)});
