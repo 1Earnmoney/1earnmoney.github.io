@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>لوحة التحكم</title>
+<style>
+:root{--accent:#2f6bff;--bg:#070d2a;--ink:#f5f7ff;--mute:#9aa4c7;--card:#101838;--line:rgba(255,255,255,.12);--ok:#34d27b;--bad:#ff5c6c;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+body{background:radial-gradient(80% 40% at 50% 0%,#14226b,var(--bg));background-color:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI","Tajawal",Tahoma,sans-serif;line-height:1.6;padding:16px 14px 110px;min-height:100vh}
+.wrap{max-width:720px;margin:0 auto}
+h1{font-size:28px;margin:10px 0 4px}.lead{color:var(--mute);font-size:14px;margin-bottom:16px}
+h3{font-size:17px;margin-bottom:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;margin-bottom:14px}
+label{display:block;font-size:13px;color:var(--mute);margin:12px 0 5px}
+input[type=text],input[type=url],input[type=password],textarea,select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);font:inherit}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+input[type=color]{width:100%;height:46px;border:1px solid var(--line);border-radius:12px;background:transparent;padding:3px}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:130px}
+button{font:inherit;font-weight:700;border:0;border-radius:980px;padding:11px 22px;cursor:pointer;background:var(--accent);color:#fff}
+button.sec{background:transparent;color:#cfe0ff;border:1px solid var(--line)}
+button.del{background:transparent;color:var(--bad);border:1px solid var(--line);padding:9px 16px}
+.sw{display:flex;align-items:center;gap:10px;margin-top:12px;color:var(--ink);font-size:15px}
+.sw input{width:20px;height:20px;accent-color:var(--accent)}
+.link{border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:10px;background:rgba(255,255,255,.03)}
+.hint{font-size:12.5px;color:var(--mute);margin-top:6px}
+.msg{margin-top:10px;font-size:14px;min-height:20px}.msg.ok{color:var(--ok)}.msg.bad{color:var(--bad)}
+.bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;justify-content:center;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:rgba(7,13,42,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+.hide{display:none}
+.logoprev{width:96px;height:96px;border-radius:20px;border:1px dashed var(--line);display:grid;place-items:center;background:rgba(255,255,255,.04);overflow:hidden}
+.logoprev img{max-width:100%;max-height:100%;object-fit:contain}
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.presets button{width:40px;height:40px;padding:0;border-radius:50%;border:2px solid var(--line)}
+a{color:#8fb4ff}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>لوحة التحكم</h1>
+<p class="lead">كل تعديل تحفظه ينعكس على الموقع بعد حوالي دقيقة.</p>
+
+<!-- تسجيل الدخول -->
+<div class="card" id="loginBox">
+  <h3>🔐 تسجيل الدخول</h3>
+  <label>توكن GitHub</label>
+  <input type="password" id="tok" autocomplete="off" placeholder="github_pat_...">
+  <div class="row">
+    <div><label>اسم حساب GitHub (المالك)</label><input type="text" id="own" style="direction:ltr"></div>
+    <div><label>اسم المستودع (Repository)</label><input type="text" id="rep" style="direction:ltr"></div>
+  </div>
+  <label class="sw"><input type="checkbox" id="rem"> تذكّر التوكن على هذا الجهاز</label>
+  <div style="margin-top:14px"><button id="loginBtn">دخول</button></div>
+  <p class="msg" id="loginMsg"></p>
+  <p class="hint">التوكن هو كلمة السر الحقيقية للوحة. أنشئه من GitHub بصلاحية Contents: Read and write على هذا المستودع فقط (الشرح في README).</p>
+</div>
+
+<div id="panel" class="hide">
+
+  <div class="card">
+    <h3>✏️ النصوص</h3>
+    <label>العنوان الرئيسي</label><input type="text" data-p="title">
+    <label>عنوان تبويب المتصفح (اتركه فارغاً ليطابق العنوان)</label><input type="text" data-p="pageTitle">
+    <label>الوصف تحت العنوان</label><textarea rows="2" data-p="subtitle"></textarea>
+    <label>النص في الشارة العلوية</label><input type="text" data-p="highlight">
+    <label class="sw"><input type="checkbox" data-p="showTag"> إظهار الشارة العلوية</label>
+    <label>التنبيه أسفل الصفحة</label><textarea rows="2" data-p="note"></textarea>
+  </div>
+
+  <div class="card">
+    <h3>🖼️ الكرة / اللوجو</h3>
+    <label>ماذا يظهر في أعلى الصفحة؟</label>
+    <select data-p="visual"><option value="ball">الكرة المتحركة</option><option value="logo">اللوجو الخاص بي</option></select>
+    <div class="row" style="align-items:center;margin-top:14px">
+      <div class="logoprev" style="flex:0 0 96px;min-width:96px"><img id="logoImg" alt="" hidden><span id="logoEmpty" class="hint">لا يوجد</span></div>
+      <div><input type="file" id="logoFile" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+        <p class="hint">يُرفع تلقائياً عند الحفظ. يفضّل PNG بخلفية شفافة.</p>
+        <button class="del" id="logoDel" type="button" style="margin-top:8px">إزالة اللوجو</button></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🎨 الألوان</h3>
+    <div class="row">
+      <div><label>اللون الرئيسي</label><input type="color" data-p="colors.accent"></div>
+      <div><label>اللون الثانوي</label><input type="color" data-p="colors.accent2"></div>
+      <div><label>لون الخلفية</label><input type="color" data-p="colors.bg"></div>
+      <div><label>لون النص</label><input type="color" data-p="colors.ink"></div>
+    </div>
+    <div class="presets" id="presets"></div>
+    <p class="hint">أزرار الألوان الجاهزة تغيّر الألوان بضغطة واحدة.</p>
+  </div>
+
+  <div class="card">
+    <h3>🔗 القنوات والروابط</h3>
+    <p class="hint" style="margin:0 0 10px">الأزرار الكبيرة = الزر الأزرق الرئيسي. أول رابط عادي يظهر زراً زجاجياً، والباقي مربعات متوهجة.</p>
+    <div id="linksEd"></div>
+    <button class="sec" id="addLink" type="button">+ إضافة قناة / رابط</button>
+  </div>
+
+  <div class="card">
+    <h3>🎧 زر التواصل مع الدعم</h3>
+    <label class="sw"><input type="checkbox" data-p="support.enabled"> إظهار زر الدعم</label>
+    <label>اسم الزر</label><input type="text" data-p="support.label">
+    <label>رابط الدعم (تلجرام / واتساب / ...)</label><input type="url" data-p="support.url" style="direction:ltr">
+    <label>الأيقونة</label><input type="text" data-p="support.icon" style="direction:ltr">
+    <p class="hint">أيقونات جاهزة: plane vip live group star fire chart bell support — أو اكتب أي إيموجي.</p>
+  </div>
+
+  <div class="card">
+    <h3>🎁 البروموكود</h3>
+    <label class="sw"><input type="checkbox" data-p="showPromo"> إظهار قسم البروموكود</label>
+    <label>عنوان القسم</label><input type="text" data-p="promoLabel">
+    <label>الكود</label><input type="text" data-p="promoCode" style="direction:ltr">
+  </div>
+
+  <div class="card">
+    <h3>⚙️ إعدادات أخرى</h3>
+    <label class="sw"><input type="checkbox" data-p="animations"> تفعيل الحركات والانيميشن</label>
+    <label>يوزر الأدمن (حساب GitHub المسموح له بالدخول)</label>
+    <input type="text" data-p="adminUser" style="direction:ltr">
+    <p class="hint">إذا غيّرته لحساب آخر فلن يدخل اللوحة إلا ذلك الحساب (ويجب أن يكون له صلاحية كتابة على المستودع).</p>
+    <div style="margin-top:14px"><a href="./" target="_blank" rel="noopener">فتح الموقع ↗</a></div>
+  </div>
+
+  <div class="bar">
+    <button id="save" type="button">💾 حفظ ونشر</button>
+    <button class="sec" id="logout" type="button">خروج</button>
+  </div>
+  <p class="msg" id="msg" style="text-align:center"></p>
+</div>
+</div>
+
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var API="https://api.github.com";
+  var DEFAULTS={
+    pageTitle:"",title:"توقعات المباريات",highlight:"توقعات كل يوم",showTag:true,
+    subtitle:"انضم لقناتنا على تلجرام واستلم التوقعات قبل المباراة بوقت كافٍ",
+    visual:"ball",logo:"",animations:true,adminUser:"",
+    promoLabel:"بروموكود التسجيل وخذ البونص",promoCode:"YOURCODE",showPromo:true,
+    note:"+18 فقط. التوقعات للمتعة وليست ضماناً للربح، العب بمسؤولية.",
+    support:{enabled:true,label:"تواصل مع الدعم",url:"https://t.me/YOUR_SUPPORT",icon:"support"},
+    colors:{accent:"#2f6bff",accent2:"#5ac8fa",bg:"#050b24",ink:"#ffffff"},
+    links:[
+      {id:"main",label:"انضم للقناة الرئيسية",url:"https://t.me/YOUR_MAIN_CHANNEL",icon:"plane",main:true},
+      {id:"vip",label:"قناة VIP",url:"https://t.me/YOUR_VIP_CHANNEL",icon:"vip",main:false},
+      {id:"live",label:"التوقعات المباشرة",url:"https://t.me/YOUR_LIVE_CHANNEL",icon:"live",main:false},
+      {id:"group",label:"قروب النقاش",url:"https://t.me/YOUR_GROUP",icon:"group",main:false}
+    ]
+  };
+  var PRESETS=[["#2f6bff","#5ac8fa","#050b24"],["#10b981","#6ee7b7","#04140e"],["#8b5cf6","#c4b5fd","#0d0620"],["#ef4444","#fca5a5","#190507"],["#f59e0b","#fde68a","#171002"],["#ec4899","#f9a8d4","#18061005"]];
+  var S={token:"",owner:"",repo:"",branch:"main",sha:null,login:"",cfg:null,pendingLogo:null,logoRemoved:false};
+
+  // اكتشاف المستودع تلقائياً من رابط GitHub Pages
+  (function(){
+    var h=location.hostname,p=location.pathname.split("/").filter(Boolean);
+    if(/\.github\.io$/.test(h)){
+      $("own").value=h.split(".")[0];
+      $("rep").value=(p.length>1)?p[0]:h;
+    }
+    try{
+      var t=localStorage.getItem("gh_token");if(t){$("tok").value=t;$("rem").checked=true}
+      var o=localStorage.getItem("gh_owner"),r=localStorage.getItem("gh_repo");
+      if(o)$("own").value=o;if(r)$("rep").value=r;
+    }catch(e){}
+  })();
+
+  function hdr(){return {"Authorization":"Bearer "+S.token,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"}}
+  function gh(path,opt){opt=opt||{};opt.headers=Object.assign(hdr(),opt.headers||{});return fetch(API+path,opt)}
+  function repoPath(p){return "/repos/"+S.owner+"/"+S.repo+p}
+  function b64enc(s){return btoa(unescape(encodeURIComponent(s)))}
+  function b64dec(s){return decodeURIComponent(escape(atob(s.replace(/\n/g,""))))}
+  function say(id,t,c){var e=$(id);e.textContent=t;e.className="msg"+(c?" "+c:"")}
+  function merge(base,over){var o=JSON.parse(JSON.stringify(base));for(var k in over){o[k]=over[k]}return o}
+  function getp(o,p){return p.split(".").reduce(function(a,k){return a==null?a:a[k]},o)}
+  function setp(o,p,v){var k=p.split(".");var l=k.pop();var t=k.reduce(function(a,x){a[x]=a[x]||{};return a[x]},o);t[l]=v}
+
+  async function login(){
+    S.token=$("tok").value.trim();S.owner=$("own").value.trim();S.repo=$("rep").value.trim();
+    if(!S.token||!S.owner||!S.repo){say("loginMsg","املأ كل الحقول","bad");return}
+    say("loginMsg","جاري التحقق...");
+    try{
+      var r=await gh("/user");
+      if(!r.ok){say("loginMsg","التوكن غير صحيح أو منتهي","bad");return}
+      S.login=(await r.json()).login;
+      var rr=await gh(repoPath(""));
+      if(!rr.ok){say("loginMsg","المستودع غير موجود أو التوكن لا يملك صلاحية عليه","bad");return}
+      var ri=await rr.json();
+      if(ri.permissions&&!ri.permissions.push){say("loginMsg","حسابك لا يملك صلاحية الكتابة على هذا المستودع","bad");return}
+      S.branch=ri.default_branch||"main";
+      var cr=await gh(repoPath("/contents/config.json?ref="+encodeURIComponent(S.branch)+"&t="+Date.now()));
+      if(cr.ok){var cj=await cr.json();S.sha=cj.sha;S.cfg=merge(DEFAULTS,JSON.parse(b64dec(cj.content)))}
+      else if(cr.status===404){S.sha=null;S.cfg=merge(DEFAULTS,{})}
+      else{say("loginMsg","تعذّر قراءة الإعدادات ("+cr.status+")","bad");return}
+      if(S.cfg.adminUser&&S.cfg.adminUser.toLowerCase()!==S.login.toLowerCase()){
+        say("loginMsg","هذا الحساب ("+S.login+") غير مسموح له بالدخول","bad");return}
+      try{
+        if($("rem").checked)localStorage.setItem("gh_token",S.token);else localStorage.removeItem("gh_token");
+        localStorage.setItem("gh_owner",S.owner);localStorage.setItem("gh_repo",S.repo);
+      }catch(e){}
+      $("loginBox").classList.add("hide");$("panel").classList.remove("hide");
+      fill();say("msg","");
+    }catch(e){say("loginMsg","خطأ في الاتصال: "+e.message,"bad")}
+  }
+  $("loginBtn").onclick=login;
+  $("tok").addEventListener("keydown",function(e){if(e.key==="Enter")login()});
+  $("logout").onclick=function(){
+    try{localStorage.removeItem("gh_token")}catch(e){}
+    S.token="";$("tok").value="";$("panel").classList.add("hide");$("loginBox").classList.remove("hide");say("loginMsg","");
+  };
+
+  function fill(){
+    document.querySelectorAll("[data-p]").forEach(function(el){
+      var v=getp(S.cfg,el.getAttribute("data-p"));
+      if(el.type==="checkbox")el.checked=(v!==false);else el.value=(v==null?"":v);
+    });
+    if(!S.cfg.adminUser)$("panel").querySelector('[data-p="adminUser"]').value=S.login;
+    showLogo();drawLinks();drawPresets();
+  }
+  function collect(){
+    document.querySelectorAll("[data-p]").forEach(function(el){
+      setp(S.cfg,el.getAttribute("data-p"),el.type==="checkbox"?el.checked:el.value.trim());
+    });
+  }
+
+  function showLogo(){
+    var src=S.pendingLogo?S.pendingLogo.dataUrl:(S.logoRemoved?"":S.cfg.logo);
+    if(src&&!S.pendingLogo&&!/^https?:|^data:/.test(src)){src=location.href.replace(/[^\/]*$/,"")+src}
+    $("logoImg").hidden=!src;$("logoEmpty").hidden=!!src;
+    if(src)$("logoImg").src=src;
+  }
+  $("logoFile").onchange=function(){
+    var f=this.files[0];if(!f)return;
+    if(f.size>8*1024*1024){say("msg","الصورة كبيرة جداً","bad");return}
+    var rd=new FileReader();
+    rd.onload=function(){
+      if(f.type==="image/svg+xml"){
+        S.pendingLogo={dataUrl:rd.result,b64:rd.result.split(",")[1],ext:"svg"};finishLogo();return;
+      }
+      var im=new Image();
+      im.onload=function(){
+        var m=512,w=im.width,h=im.height,k=Math.min(1,m/Math.max(w,h));
+        var c=document.createElement("canvas");c.width=Math.round(w*k);c.height=Math.round(h*k);
+        c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+        var d=c.toDataURL("image/png");
+        S.pendingLogo={dataUrl:d,b64:d.split(",")[1],ext:"png"};finishLogo();
+      };
+      im.src=rd.result;
+    };
+    rd.readAsDataURL(f);
+  };
+  function finishLogo(){
+    S.logoRemoved=false;
+    document.querySelector('[data-p="visual"]').value="logo";
+    showLogo();say("msg","تم اختيار اللوجو — اضغط حفظ ونشر","ok");
+  }
+  $("logoDel").onclick=function(){
+    S.pendingLogo=null;S.logoRemoved=true;
+    document.querySelector('[data-p="visual"]').value="ball";showLogo();
+  };
+
+  function drawPresets(){
+    var b=$("presets");b.textContent="";
+    PRESETS.forEach(function(p){
+      var x=document.createElement("button");x.type="button";x.title="لون جاهز";
+      x.style.background="linear-gradient(135deg,"+p[0]+","+p[1]+")";
+      x.onclick=function(){
+        document.querySelector('[data-p="colors.accent"]').value=p[0];
+        document.querySelector('[data-p="colors.accent2"]').value=p[1];
+        document.querySelector('[data-p="colors.bg"]').value=p[2].length===7?p[2]:"#18061a";
+      };
+      b.appendChild(x);
+    });
+  }
+
+  function drawLinks(){
+    var box=$("linksEd");box.textContent="";
+    S.cfg.links.forEach(function(l,i){
+      var d=document.createElement("div");d.className="link";
+      d.innerHTML='<div class="row"><div><label>اسم القناة</label><input type="text" data-k="label"></div>'+
+        '<div style="max-width:150px"><label>الأيقونة</label><input type="text" data-k="icon" style="direction:ltr"></div></div>'+
+        '<label>الرابط</label><input type="url" data-k="url" style="direction:ltr">'+
+        '<div class="row" style="margin-top:12px;align-items:center"><label class="sw" style="margin:0"><input type="checkbox" data-k="main"> زر رئيسي كبير</label>'+
+        '<button class="sec up" type="button">⬆️</button><button class="sec dn" type="button">⬇️</button><button class="del" type="button">حذف</button></div>';
+      d.querySelectorAll("[data-k]").forEach(function(el){
+        var k=el.getAttribute("data-k");
+        if(k==="main"){el.checked=!!l.main;el.onchange=function(){l.main=el.checked}}
+        else{el.value=l[k]||"";el.oninput=function(){l[k]=el.value}}
+      });
+      d.querySelector(".up").onclick=function(){if(i>0){var t=S.cfg.links[i];S.cfg.links[i]=S.cfg.links[i-1];S.cfg.links[i-1]=t;drawLinks()}};
+      d.querySelector(".dn").onclick=function(){if(i<S.cfg.links.length-1){var t=S.cfg.links[i];S.cfg.links[i]=S.cfg.links[i+1];S.cfg.links[i+1]=t;drawLinks()}};
+      d.querySelector(".del").onclick=function(){if(confirm("حذف هذه القناة؟")){S.cfg.links.splice(i,1);drawLinks()}};
+      box.appendChild(d);
+    });
+  }
+  $("addLink").onclick=function(){
+    S.cfg.links.push({id:"l"+Date.now().toString(36),label:"قناة جديدة",url:"https://t.me/",icon:"plane",main:false});drawLinks();
+  };
+
+  async function putFile(path,b64,msg,sha){
+    var body={message:msg,content:b64,branch:S.branch};if(sha)body.sha=sha;
+    return gh(repoPath("/contents/"+path),{method:"PUT",body:JSON.stringify(body)});
+  }
+  async function fileSha(path){
+    var r=await gh(repoPath("/contents/"+path+"?ref="+encodeURIComponent(S.branch)+"&t="+Date.now()));
+    return r.ok?(await r.json()).sha:null;
+  }
+
+  $("save").onclick=async function(){
+    collect();
+    var L=S.cfg.links;
+    for(var i=0;i<L.length;i++){
+      if(!/^https?:\/\//i.test(L[i].url||"")){say("msg","رابط القناة رقم "+(i+1)+" يجب أن يبدأ بـ https://","bad");return}
+    }
+    if(S.cfg.support.enabled&&!/^https?:\/\//i.test(S.cfg.support.url||"")){say("msg","رابط الدعم يجب أن يبدأ بـ https://","bad");return}
+    if(!S.cfg.adminUser)S.cfg.adminUser=S.login;
+    if(S.cfg.adminUser.toLowerCase()!==S.login.toLowerCase()&&!confirm("أنت تغيّر يوزر الأدمن إلى «"+S.cfg.adminUser+"». بعد الحفظ لن يدخل اللوحة إلا هذا الحساب. متأكد؟"))return;
+    if(S.cfg.visual==="logo"&&!S.pendingLogo&&!S.cfg.logo){say("msg","اختر ملف اللوجو أولاً أو اعرض الكرة","bad");return}
+    say("msg","جاري الحفظ...");
+    var btn=$("save");btn.disabled=true;
+    try{
+      if(S.pendingLogo){
+        var path="assets/logo."+S.pendingLogo.ext;
+        var lr=await putFile(path,S.pendingLogo.b64,"تحديث اللوجو",await fileSha(path));
+        if(!lr.ok){say("msg","فشل رفع اللوجو ("+lr.status+")","bad");btn.disabled=false;return}
+        S.cfg.logo=path+"?v="+Date.now();S.pendingLogo=null;
+      }
+      if(S.logoRemoved){S.cfg.logo="";S.logoRemoved=false}
+      var json=JSON.stringify(S.cfg,null,2),b=b64enc(json);
+      var r=await putFile("config.json",b,"تحديث إعدادات الموقع من لوحة التحكم",S.sha);
+      if(r.status===409||r.status===422){r=await putFile("config.json",b,"تحديث إعدادات الموقع من لوحة التحكم",await fileSha("config.json"))}
+      if(!r.ok){
+        var t="";try{t=(await r.json()).message}catch(e){}
+        say("msg","فشل الحفظ ("+r.status+") "+t,"bad");btn.disabled=false;return;
+      }
+      S.sha=(await r.json()).content.sha;
+      showLogo();
+      say("msg","✅ تم الحفظ — سيظهر على الموقع خلال حوالي دقيقة","ok");
+    }catch(e){say("msg","خطأ: "+e.message,"bad")}
+    btn.disabled=false;
+  };
+})();
+</script>
+</body>
+</html>
