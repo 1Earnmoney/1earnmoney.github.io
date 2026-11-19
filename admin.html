@@ -33,6 +33,23 @@ button.del{background:transparent;color:var(--bad);border:1px solid var(--line);
 .logoprev img{max-width:100%;max-height:100%;object-fit:contain}
 .presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .presets button{width:40px;height:40px;padding:0;border-radius:50%;border:2px solid var(--line)}
+.icpk{border:1px solid var(--line);border-radius:14px;padding:10px;background:rgba(255,255,255,.03)}
+.icrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.icprev{width:46px;height:46px;border-radius:12px;border:1px solid var(--line);display:grid;place-items:center;background:rgba(255,255,255,.06);font-size:24px;flex:none;overflow:hidden}
+.icprev img{max-width:80%;max-height:80%;object-fit:contain}
+.icrow input[type=text]{flex:1;min-width:120px}
+.icgrid{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.icb{width:42px;height:42px;padding:0;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid var(--line);display:grid;place-items:center}
+.icb.on{border-color:var(--accent);background:rgba(47,107,255,.25)}
+.icb svg,.icprev svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+input[type=number]{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);font:inherit}
+.phgrid{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.phi{width:96px;border:1px solid var(--line);border-radius:12px;padding:6px;background:rgba(255,255,255,.03)}
+.phi img{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:8px;display:block}
+.phi .ctl{display:flex;gap:4px;margin-top:6px}
+.phi .ctl button{flex:1;padding:6px 0;font-size:13px;border-radius:8px}
+.emos{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.emos button{width:42px;height:42px;padding:0;font-size:22px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
 a{color:#8fb4ff}
 </style>
 </head>
@@ -81,6 +98,24 @@ a{color:#8fb4ff}
   </div>
 
   <div class="card">
+    <h3>📱 الجوال والصور</h3>
+    <label>طريقة العرض</label>
+    <select data-p="phone.mode">
+      <option value="phone">داخل إطار جوال 📱</option>
+      <option value="plain">الصور بدون إطار الجوال</option>
+      <option value="off">إخفاء هذا القسم</option>
+    </select>
+    <label class="sw"><input type="checkbox" data-p="phone.tilt"> إمالة الجوال بشكل ثلاثي الأبعاد (مع الإطار فقط)</label>
+    <label class="sw"><input type="checkbox" data-p="phone.crop"> قصّ الجزء السفلي بتدرّج (مع الإطار فقط)</label>
+    <label>سرعة تبديل الصور (بالثواني)</label>
+    <input type="number" min="1" max="20" step="0.5" data-p="phone.speed" style="direction:ltr">
+    <div class="phgrid" id="phImgs"></div>
+    <input type="file" id="phFile" accept="image/png,image/jpeg,image/webp" multiple hidden>
+    <button class="sec" id="phAdd" type="button">+ إضافة صور للجوال</button>
+    <p class="hint">أضف لقطات شاشة أو أي صور (يفضّل طولية). إذا أضفت أكثر من صورة تتبدّل تلقائياً. بدون صور يظهر جوال بشاشة افتراضية.</p>
+  </div>
+
+  <div class="card">
     <h3>🎨 الألوان</h3>
     <div class="row">
       <div><label>اللون الرئيسي</label><input type="color" data-p="colors.accent"></div>
@@ -90,6 +125,20 @@ a{color:#8fb4ff}
     </div>
     <div class="presets" id="presets"></div>
     <p class="hint">أزرار الألوان الجاهزة تغيّر الألوان بضغطة واحدة.</p>
+  </div>
+
+  <div class="card">
+    <h3>🌌 الخلفية المتحركة</h3>
+    <label>نوع الحركة في خلفية الموقع</label>
+    <select data-p="bgStyle">
+      <option value="balls">كرات قدم ⚽ تطفو</option>
+      <option value="stars">نجوم متلألئة</option>
+      <option value="particles">فقاعات متوهجة</option>
+      <option value="waves">موجات</option>
+      <option value="orbs">كرات ضوء ملونة</option>
+      <option value="none">بدون</option>
+    </select>
+    <p class="hint">تتبع الألوان التي تختارها. تتوقف الحركة إذا أوقفت «الحركات والانيميشن» في الإعدادات الأخرى.</p>
   </div>
 
   <div class="card">
@@ -104,15 +153,25 @@ a{color:#8fb4ff}
     <label class="sw"><input type="checkbox" data-p="support.enabled"> إظهار زر الدعم</label>
     <label>اسم الزر</label><input type="text" data-p="support.label">
     <label>رابط الدعم (تلجرام / واتساب / ...)</label><input type="url" data-p="support.url" style="direction:ltr">
-    <label>الأيقونة</label><input type="text" data-p="support.icon" style="direction:ltr">
-    <p class="hint">أيقونات جاهزة: plane vip live group star fire chart bell support — أو اكتب أي إيموجي.</p>
+    <label>الأيقونة</label><div id="supIcon"></div>
   </div>
 
   <div class="card">
     <h3>🎁 البروموكود</h3>
     <label class="sw"><input type="checkbox" data-p="showPromo"> إظهار قسم البروموكود</label>
+    <label>أيقونة الهدية (إيموجي، اتركه فارغاً لإخفائها)</label>
+    <input type="text" data-p="promoIcon" style="direction:ltr">
+    <div class="emos" id="promoEmo"></div>
     <label>عنوان القسم</label><input type="text" data-p="promoLabel">
     <label>الكود</label><input type="text" data-p="promoCode" style="direction:ltr">
+  </div>
+
+  <div class="card">
+    <h3>🛠️ وضع الصيانة (إغلاق مؤقت)</h3>
+    <label class="sw"><input type="checkbox" data-p="maintenance.enabled"> إغلاق الموقع مؤقتاً</label>
+    <label>العنوان</label><input type="text" data-p="maintenance.title">
+    <label>الرسالة</label><textarea rows="2" data-p="maintenance.message"></textarea>
+    <p class="hint">عند التفعيل يرى الزوار صفحة الصيانة فقط. لوحة التحكم تبقى تعمل، وأطفئ الخيار ثم احفظ لإعادة فتح الموقع.</p>
   </div>
 
   <div class="card">
@@ -139,7 +198,8 @@ a{color:#8fb4ff}
   var DEFAULTS={
     pageTitle:"",title:"توقعات المباريات",highlight:"توقعات كل يوم",showTag:true,
     subtitle:"انضم لقناتنا على تلجرام واستلم التوقعات قبل المباراة بوقت كافٍ",
-    visual:"ball",logo:"",animations:true,adminUser:"",
+    visual:"ball",logo:"",animations:true,adminUser:"",phone:{mode:"phone",tilt:true,crop:true,speed:3.5,images:[]},bgStyle:"balls",promoIcon:"🎁",
+    maintenance:{enabled:false,title:"الموقع تحت الصيانة",message:"نعود قريباً، شكراً لصبركم"},
     promoLabel:"بروموكود التسجيل وخذ البونص",promoCode:"YOURCODE",showPromo:true,
     note:"+18 فقط. التوقعات للمتعة وليست ضماناً للربح، العب بمسؤولية.",
     support:{enabled:true,label:"تواصل مع الدعم",url:"https://t.me/YOUR_SUPPORT",icon:"support"},
@@ -213,12 +273,14 @@ a{color:#8fb4ff}
   };
 
   function fill(){
+    S.cfg.phone=Object.assign({},DEFAULTS.phone,S.cfg.phone||{});
+    S.phoneImgs=(S.cfg.phone.images||[]).map(function(p){return {src:p}});
     document.querySelectorAll("[data-p]").forEach(function(el){
       var v=getp(S.cfg,el.getAttribute("data-p"));
       if(el.type==="checkbox")el.checked=(v!==false);else el.value=(v==null?"":v);
     });
     if(!S.cfg.adminUser)$("panel").querySelector('[data-p="adminUser"]').value=S.login;
-    showLogo();drawLinks();drawPresets();
+    showLogo();drawLinks();drawPresets();drawEmos();drawSup();drawPh();
   }
   function collect(){
     document.querySelectorAll("[data-p]").forEach(function(el){
@@ -276,12 +338,116 @@ a{color:#8fb4ff}
     });
   }
 
+  var NS="http://www.w3.org/2000/svg";
+  var PATHS={
+    plane:"M21.5 3.5L2.5 11l6.5 2.5L11 20.5l3.2-4.6 4.6 3.6z M9 13.5l8-6",
+    vip:"M6 3h12l4 6-10 12L2 9l4-6z M2 9h20 M9 3l3 6 3-6 M12 9v12",
+    live:"M12 10.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z M7.8 7.8a6 6 0 000 8.4 M16.2 7.8a6 6 0 010 8.4 M4.9 4.9a10 10 0 000 14.2 M19.1 4.9a10 10 0 010 14.2",
+    group:"M21 12a8 8 0 01-11.6 7.1L3 21l1.9-5.4A8 8 0 1121 12z",
+    star:"M12 2l3 7 7 .5-5.5 5 1.5 7.5-6-4-6 4 1.5-7.5L2 9.5 9 9z",
+    fire:"M12 2c1 4 5 5.5 5 10a5 5 0 01-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z",
+    chart:"M3 20h18 M6 16v-5 M11 16V6 M16 16v-8",
+    bell:"M18 16v-5a6 6 0 10-12 0v5l-2 2h16z M10 21h4",
+    support:"M4 14v-2a8 8 0 0116 0v2 M4 14h3v5H5a1 1 0 01-1-1v-4z M20 14h-3v5h2a1 1 0 001-1v-4z M17 19c0 1.5-2 2-5 2"
+  };
+  function svgEl(n){var s=document.createElementNS(NS,"svg");s.setAttribute("viewBox","0 0 24 24");var p=document.createElementNS(NS,"path");p.setAttribute("d",PATHS[n]||PATHS.plane);s.appendChild(p);return s}
+  function isImg(v){return /^(https?:\/\/|data:image\/|assets\/)/i.test(v||"")}
+  function iconSrc(v){return /^assets\//.test(v)?location.href.replace(/[^\/]*$/,"")+v:v}
+  function readIcon(f,cb){
+    if(f.size>4*1024*1024){say("msg","الصورة كبيرة جداً","bad");return}
+    var rd=new FileReader();
+    rd.onload=function(){
+      if(f.type==="image/svg+xml"){cb({dataUrl:rd.result,b64:rd.result.split(",")[1],ext:"svg"});return}
+      var im=new Image();
+      im.onload=function(){
+        var m=160,k=Math.min(1,m/Math.max(im.width,im.height));
+        var c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));
+        c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+        var d=c.toDataURL("image/png");cb({dataUrl:d,b64:d.split(",")[1],ext:"png"});
+      };
+      im.src=rd.result;
+    };
+    rd.readAsDataURL(f);
+  }
+  function iconPicker(o){
+    var w=document.createElement("div");w.className="icpk";
+    var row=document.createElement("div");row.className="icrow";
+    var pv=document.createElement("div");pv.className="icprev";
+    var inp=document.createElement("input");inp.type="text";inp.style.direction="ltr";
+    var up=document.createElement("button");up.type="button";up.className="sec";up.textContent="📁 رفع صورة PNG";
+    var fi=document.createElement("input");fi.type="file";fi.hidden=true;fi.accept="image/png,image/jpeg,image/webp,image/svg+xml";
+    var grid=document.createElement("div");grid.className="icgrid";
+    var btns={};
+    function show(){
+      var v=o.icon||"";pv.textContent="";
+      if(isImg(v)){var im=new Image();im.src=iconSrc(v);pv.appendChild(im);inp.value="";inp.placeholder="صورة مرفوعة (اكتب إيموجي لاستبدالها)"}
+      else if(PATHS[v]){pv.appendChild(svgEl(v));inp.value=v;inp.placeholder=""}
+      else{pv.textContent=v;inp.value=v;inp.placeholder="إيموجي أو اسم أيقونة"}
+      for(var k in btns)btns[k].className="icb"+(k===v?" on":"");
+    }
+    Object.keys(PATHS).forEach(function(k){
+      var b=document.createElement("button");b.type="button";b.title=k;b.className="icb";b.appendChild(svgEl(k));
+      b.onclick=function(){o.icon=k;delete o._b64;delete o._ext;show()};
+      btns[k]=b;grid.appendChild(b);
+    });
+    inp.oninput=function(){o.icon=inp.value.trim();delete o._b64;delete o._ext;pv.textContent="";
+      if(PATHS[o.icon])pv.appendChild(svgEl(o.icon));else pv.textContent=o.icon;
+      for(var k in btns)btns[k].className="icb"+(k===o.icon?" on":"")};
+    up.onclick=function(){fi.click()};
+    fi.onchange=function(){var f=fi.files[0];if(!f)return;
+      readIcon(f,function(r){o.icon=r.dataUrl;o._b64=r.b64;o._ext=r.ext;show();say("msg","تم اختيار الأيقونة — اضغط حفظ ونشر","ok")})};
+    row.appendChild(pv);row.appendChild(inp);row.appendChild(up);row.appendChild(fi);
+    w.appendChild(row);w.appendChild(grid);show();return w;
+  }
+  function readPhoto(f,cb){
+    if(f.size>12*1024*1024){say("msg","صورة كبيرة جداً","bad");return}
+    var rd=new FileReader();
+    rd.onload=function(){
+      var im=new Image();
+      im.onload=function(){
+        var m=1000,k=Math.min(1,m/Math.max(im.width,im.height));
+        var c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));
+        var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
+        var d=c.toDataURL("image/jpeg",.86);cb({src:d,b64:d.split(",")[1],ext:"jpg"});
+      };
+      im.src=rd.result;
+    };
+    rd.readAsDataURL(f);
+  }
+  function drawPh(){
+    var b=$("phImgs");b.textContent="";
+    S.phoneImgs.forEach(function(it,i){
+      var d=document.createElement("div");d.className="phi";
+      var im=new Image();im.src=iconSrc(it.src);d.appendChild(im);
+      var c=document.createElement("div");c.className="ctl";
+      function mk(t,cls,fn){var x=document.createElement("button");x.type="button";x.className=cls;x.textContent=t;x.onclick=fn;c.appendChild(x)}
+      mk("⬅️","sec",function(){if(i<S.phoneImgs.length-1){var t=S.phoneImgs[i];S.phoneImgs[i]=S.phoneImgs[i+1];S.phoneImgs[i+1]=t;drawPh()}});
+      mk("➡️","sec",function(){if(i>0){var t=S.phoneImgs[i];S.phoneImgs[i]=S.phoneImgs[i-1];S.phoneImgs[i-1]=t;drawPh()}});
+      mk("✕","del",function(){S.phoneImgs.splice(i,1);drawPh()});
+      d.appendChild(c);b.appendChild(d);
+    });
+  }
+  $("phAdd").onclick=function(){$("phFile").click()};
+  $("phFile").onchange=function(){
+    var fs=Array.prototype.slice.call(this.files);this.value="";
+    fs.forEach(function(f){readPhoto(f,function(r){S.phoneImgs.push(r);drawPh();say("msg","تمت إضافة الصورة — اضغط حفظ ونشر","ok")})});
+  };
+  function drawSup(){var b=$("supIcon");b.textContent="";if(!S.cfg.support)S.cfg.support={};b.appendChild(iconPicker(S.cfg.support))}
+  function drawEmos(){
+    var b=$("promoEmo");b.textContent="";
+    ["🎁","🎉","🔥","⭐","💰","🏆","⚽","💎","🎯","🤑"].forEach(function(e){
+      var x=document.createElement("button");x.type="button";x.textContent=e;
+      x.onclick=function(){document.querySelector('[data-p="promoIcon"]').value=e};
+      b.appendChild(x);
+    });
+  }
+
   function drawLinks(){
     var box=$("linksEd");box.textContent="";
     S.cfg.links.forEach(function(l,i){
       var d=document.createElement("div");d.className="link";
-      d.innerHTML='<div class="row"><div><label>اسم القناة</label><input type="text" data-k="label"></div>'+
-        '<div style="max-width:150px"><label>الأيقونة</label><input type="text" data-k="icon" style="direction:ltr"></div></div>'+
+      d.innerHTML='<label>اسم القناة</label><input type="text" data-k="label">'+
+        '<label>الأيقونة</label><div class="icp"></div>'+
         '<label>الرابط</label><input type="url" data-k="url" style="direction:ltr">'+
         '<div class="row" style="margin-top:12px;align-items:center"><label class="sw" style="margin:0"><input type="checkbox" data-k="main"> زر رئيسي كبير</label>'+
         '<button class="sec up" type="button">⬆️</button><button class="sec dn" type="button">⬇️</button><button class="del" type="button">حذف</button></div>';
@@ -290,6 +456,7 @@ a{color:#8fb4ff}
         if(k==="main"){el.checked=!!l.main;el.onchange=function(){l.main=el.checked}}
         else{el.value=l[k]||"";el.oninput=function(){l[k]=el.value}}
       });
+      d.querySelector(".icp").appendChild(iconPicker(l));
       d.querySelector(".up").onclick=function(){if(i>0){var t=S.cfg.links[i];S.cfg.links[i]=S.cfg.links[i-1];S.cfg.links[i-1]=t;drawLinks()}};
       d.querySelector(".dn").onclick=function(){if(i<S.cfg.links.length-1){var t=S.cfg.links[i];S.cfg.links[i]=S.cfg.links[i+1];S.cfg.links[i+1]=t;drawLinks()}};
       d.querySelector(".del").onclick=function(){if(confirm("حذف هذه القناة؟")){S.cfg.links.splice(i,1);drawLinks()}};
@@ -329,6 +496,27 @@ a{color:#8fb4ff}
         S.cfg.logo=path+"?v="+Date.now();S.pendingLogo=null;
       }
       if(S.logoRemoved){S.cfg.logo="";S.logoRemoved=false}
+      for(var q=0;q<S.phoneImgs.length;q++){
+        var pi=S.phoneImgs[q];
+        if(pi.b64){
+          var pp="assets/phone-"+Date.now().toString(36)+q+"."+pi.ext;
+          var pr=await putFile(pp,pi.b64,"رفع صورة الجوال",null);
+          if(!pr.ok){say("msg","فشل رفع صورة الجوال ("+pr.status+")","bad");btn.disabled=false;return}
+          pi.src=pp;delete pi.b64;delete pi.ext;
+        }
+      }
+      S.cfg.phone.images=S.phoneImgs.map(function(x){return x.src});
+      S.cfg.phone.speed=parseFloat(S.cfg.phone.speed)||3.5;
+      var its=S.cfg.links.concat([S.cfg.support]);
+      for(var j=0;j<its.length;j++){
+        var it=its[j];
+        if(it&&it._b64){
+          var ip="assets/icon-"+(it.id||"support")+"-"+Date.now().toString(36)+j+"."+it._ext;
+          var ur=await putFile(ip,it._b64,"رفع أيقونة",null);
+          if(!ur.ok){say("msg","فشل رفع الأيقونة ("+ur.status+")","bad");btn.disabled=false;return}
+          it.icon=ip;delete it._b64;delete it._ext;
+        }
+      }
       var json=JSON.stringify(S.cfg,null,2),b=b64enc(json);
       var r=await putFile("config.json",b,"تحديث إعدادات الموقع من لوحة التحكم",S.sha);
       if(r.status===409||r.status===422){r=await putFile("config.json",b,"تحديث إعدادات الموقع من لوحة التحكم",await fileSha("config.json"))}
