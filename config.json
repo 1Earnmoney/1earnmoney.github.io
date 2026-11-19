@@ -8,6 +8,22 @@
   "logo": "",
   "animations": true,
   "adminUser": "1Earnmoney",
+  "phone": {
+    "mode": "plain",
+    "tilt": true,
+    "crop": true,
+    "speed": 3.5,
+    "images": [
+      "assets/phone-mwo6iq2j0.jpg"
+    ]
+  },
+  "bgStyle": "waves",
+  "promoIcon": "🎁",
+  "maintenance": {
+    "enabled": false,
+    "title": "الموقع تحت الصيانة",
+    "message": "نعود قريباً، شكراً لصبركم"
+  },
   "promoLabel": "بروموكود التسجيل وخذ البونص",
   "promoCode": "Soed1",
   "showPromo": true,
