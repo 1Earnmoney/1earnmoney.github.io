@@ -48,9 +48,9 @@
     },
     {
       "id": "group",
-      "label": "قروب النقاش",
+      "label": "VIP هنا وبس ",
       "url": "https://t.me/YOUR_GROUP",
-      "icon": "group",
+      "icon": "vip",
       "main": false
     }
   ]
