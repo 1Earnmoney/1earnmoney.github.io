@@ -13,14 +13,12 @@
     "tilt": true,
     "crop": true,
     "speed": 3.5,
-    "images": [
-      "assets/phone-mwo6iq2j0.jpg"
-    ]
+    "images": []
   },
   "bgStyle": "waves",
   "promoIcon": "🎁",
   "maintenance": {
-    "enabled": false,
+    "enabled": true,
     "title": "الموقع تحت الصيانة",
     "message": "نعود قريباً، شكراً لصبركم"
   },
