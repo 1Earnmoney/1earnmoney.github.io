@@ -18,9 +18,9 @@
     ]
   },
   "bgStyle": "orbs",
-  "promoIcon": "🎁",
+  "promoIcon": "fire",
   "maintenance": {
-    "enabled": true,
+    "enabled": false,
     "title": "الموقع تحت الصيانة",
     "message": "نعود قريباً، شكراً لصبركم"
   },
