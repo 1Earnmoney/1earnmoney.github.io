@@ -13,9 +13,11 @@
     "tilt": true,
     "crop": true,
     "speed": 3.5,
-    "images": []
+    "images": [
+      "assets/phone-mwo6w8vn0.jpg"
+    ]
   },
-  "bgStyle": "waves",
+  "bgStyle": "orbs",
   "promoIcon": "🎁",
   "maintenance": {
     "enabled": true,
