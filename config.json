@@ -31,27 +31,6 @@
       "url": "https://t.me/REASASPORT",
       "icon": "plane",
       "main": true
-    },
-    {
-      "id": "vip",
-      "label": "قناة VIP",
-      "url": "https://t.me/YOUR_VIP_CHANNEL",
-      "icon": "vip",
-      "main": false
-    },
-    {
-      "id": "live",
-      "label": "التوقعات المباشرة",
-      "url": "https://t.me/YOUR_LIVE_CHANNEL",
-      "icon": "live",
-      "main": false
-    },
-    {
-      "id": "group",
-      "label": "VIP هنا وبس ",
-      "url": "https://t.me/YOUR_GROUP",
-      "icon": "vip",
-      "main": false
     }
   ]
 }
