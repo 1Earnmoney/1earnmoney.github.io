@@ -9,7 +9,7 @@
   "animations": true,
   "adminUser": "1Earnmoney",
   "phone": {
-    "mode": "plain",
+    "mode": "phone",
     "tilt": true,
     "crop": true,
     "speed": 3.5,
