@@ -20,7 +20,7 @@
   "bgStyle": "waves",
   "promoIcon": "fire",
   "maintenance": {
-    "enabled": false,
+    "enabled": true,
     "title": "الموقع تحت الصيانة",
     "message": "نعود قريباً، شكراً لصبركم"
   },
