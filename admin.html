@@ -200,6 +200,41 @@ a{color:#8fb4ff}
   </div>
 
   <div class="card">
+    <h3>🎁 هدية البونص (تُفتح عند الضغط عليها)</h3>
+    <label class="sw"><input type="checkbox" data-p="bonus.enabled"> إظهار الهدية</label>
+    <div class="row">
+      <div><label>العنوان الصغير</label><input type="text" data-p="bonus.title"></div>
+      <div><label>مبلغ البونص (الرقم الكبير)</label><input type="text" data-p="bonus.amount"></div>
+    </div>
+    <label>النص تحت المبلغ</label><input type="text" data-p="bonus.sub">
+    <div class="row">
+      <div><label>عنوان البرومكود</label><input type="text" data-p="bonus.codeLabel"></div>
+      <div><label>البرومكود (فارغ = نفس كود الأعلى)</label><input type="text" data-p="bonus.code" style="direction:ltr"></div>
+    </div>
+    <label>نص التلميح فوق الهدية المغلقة</label><input type="text" data-p="bonus.hint">
+    <label>نص الزر بعد فتح الهدية</label><input type="text" data-p="bonus.openBtn">
+    <label>رابط التسجيل (يفتح عند الضغط على الزر)</label><input type="url" data-p="bonus.url" style="direction:ltr" placeholder="https://...">
+    <label>المميزات (حتى 4، كل سطر ميزة. لسطرين: العنوان|التفصيل)</label>
+    <textarea rows="4" data-p="bonus.features"></textarea>
+  </div>
+
+  <div class="card">
+    <h3>🖼️ البوسترات (صور إعلانية)</h3>
+    <p class="hint" style="margin:0 0 10px">كل بوستر: صورة خلفية + شعار + رقم كبير + برومكود + مميزات. يمكنك إضافة عدة بوسترات تتحرك بالسحب.</p>
+    <div id="postersEd"></div>
+    <button class="sec" id="addPoster" type="button">+ إضافة بوستر</button>
+  </div>
+
+  <div class="card">
+    <h3>📷 بطاقة QR</h3>
+    <label class="sw"><input type="checkbox" data-p="qr.enabled"> إظهار البطاقة</label>
+    <label>العنوان (كل سطر يظهر في سطر منفصل)</label><textarea rows="3" data-p="qr.title"></textarea>
+    <label>النص الصغير</label><textarea rows="2" data-p="qr.text"></textarea>
+    <label>الرابط (يُنشأ منه رمز QR تلقائياً)</label><input type="url" data-p="qr.url" style="direction:ltr" placeholder="https://...">
+    <p class="hint">يظهر رمز QR داخل البطاقة، ويفتح الرابط عند الضغط على البطاقة أو مسح الرمز.</p>
+  </div>
+
+  <div class="card">
     <h3>🛠️ وضع الصيانة (إغلاق مؤقت)</h3>
     <label class="sw"><input type="checkbox" data-p="maintenance.enabled"> إغلاق الموقع مؤقتاً</label>
     <label>العنوان</label><input type="text" data-p="maintenance.title">
@@ -231,7 +266,8 @@ a{color:#8fb4ff}
   var DEFAULTS={
     pageTitle:"",title:"توقعات المباريات",highlight:"توقعات كل يوم",showTag:true,
     subtitle:"انضم لقناتنا على تلجرام واستلم التوقعات قبل المباراة بوقت كافٍ",
-    visual:"ball",logo:"",animations:true,adminUser:"",phone:{mode:"phone",tilt:true,crop:true,speed:3.5,images:[]},bgStyle:"balls",promoIcon:"🎁",
+    visual:"ball",logo:"",animations:true,adminUser:"",bonus:{enabled:true,title:"بونص",amount:"+200ج",sub:"عند التسجيل",codeLabel:"البرومكود:",code:"",hint:"اضغط على الهدية 🎁",openBtn:"اضغط هنا لكسب بونص 200ج",features:"سحب سريع\nأعلى النسب\nإيداع وسحب بدون عمولة\nأفضل البونصات",url:""},
+    posters:[{id:"p1",enabled:true,ratio:"1:1",logoText:"SITE",logoImg:"",bg:"",dim:45,eyebrow:"في موقعنا",big:"1000$",sub:"بونص عند التسجيل",codeLabel:"البرومكود:",code:"YOURCODE",features:"سحب سريع\nأعلى النسب\nبدون عمولة\nأفضل البونصات",footer:"www.yoursite.com",url:""}],qr:{enabled:true,title:"توقعات\nأخبار\nبونصات",text:"كل هذا وأكثر في قناتنا على تلجرام، اشترك حتى لا يفوتك شيء",url:""},phone:{mode:"phone",tilt:true,crop:true,speed:3.5,images:[]},bgStyle:"balls",promoIcon:"🎁",
     maintenance:{enabled:false,title:"الموقع تحت الصيانة",message:"نعود قريباً، شكراً لصبركم"},
     promoLabel:"بروموكود التسجيل وخذ البونص",promoCode:"YOURCODE",showPromo:true,
     note:"+18 فقط. التوقعات للمتعة وليست ضماناً للربح، العب بمسؤولية.",
@@ -326,13 +362,15 @@ a{color:#8fb4ff}
 
   function fill(){
     S.cfg.phone=Object.assign({},DEFAULTS.phone,S.cfg.phone||{});
+    S.cfg.bonus=Object.assign({},DEFAULTS.bonus,S.cfg.bonus||{});
+    S.cfg.qr=Object.assign({},DEFAULTS.qr,S.cfg.qr||{});
     S.phoneImgs=(S.cfg.phone.images||[]).map(function(p){return {src:p}});
     document.querySelectorAll("[data-p]").forEach(function(el){
       var v=getp(S.cfg,el.getAttribute("data-p"));
       if(el.type==="checkbox")el.checked=(v!==false);else el.value=(v==null?"":v);
     });
     if(!S.cfg.adminUser)$("panel").querySelector('[data-p="adminUser"]').value=S.login;
-    showLogo();drawLinks();drawPresets();drawEmos();drawSup();drawPh();
+    showLogo();drawLinks();drawPresets();drawEmos();drawSup();drawPh();drawPosters();
   }
   function collect(){
     document.querySelectorAll("[data-p]").forEach(function(el){
@@ -535,6 +573,84 @@ a{color:#8fb4ff}
       im.src=item.orig||iconSrc(item.src);
     });
   }
+  function readAny(f,max,png,cb){
+    if(f.size>12*1024*1024){say("msg","الصورة كبيرة جداً","bad");return}
+    var rd=new FileReader();
+    if(f.type==="image/svg+xml"){rd.onload=function(){cb({dataUrl:rd.result,b64:rd.result.split(",")[1],ext:"svg"})};rd.readAsDataURL(f);return}
+    rd.onload=function(){
+      var im=new Image();
+      im.onload=function(){
+        var k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement("canvas");
+        c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));
+        var x=c.getContext("2d");if(!png){x.fillStyle="#000";x.fillRect(0,0,c.width,c.height)}
+        x.drawImage(im,0,0,c.width,c.height);
+        var d=png?c.toDataURL("image/png"):c.toDataURL("image/jpeg",.85);
+        cb({dataUrl:d,b64:d.split(",")[1],ext:png?"png":"jpg"});
+      };
+      im.src=rd.result;
+    };
+    rd.readAsDataURL(f);
+  }
+  function pfield(par,p,key,label,kind,rows){
+    var l=document.createElement("label");l.textContent=label;par.appendChild(l);
+    var el=document.createElement(kind==="ta"?"textarea":"input");
+    if(kind==="ta")el.rows=rows||2;else el.type=kind==="url"?"url":"text";
+    if(kind==="url"||kind==="ltr")el.style.direction="ltr";
+    el.value=p[key]==null?"":p[key];el.oninput=function(){p[key]=el.value};
+    par.appendChild(el);return el;
+  }
+  function pimg(par,p,key,label,max,png){
+    var l=document.createElement("label");l.textContent=label;par.appendChild(l);
+    var row=document.createElement("div");row.className="icrow";
+    var pv=document.createElement("div");pv.className="icprev";
+    var up=document.createElement("button");up.type="button";up.className="sec";up.textContent="📁 رفع صورة";
+    var rm=document.createElement("button");rm.type="button";rm.className="del";rm.textContent="إزالة";
+    var fi=document.createElement("input");fi.type="file";fi.hidden=true;fi.accept="image/png,image/jpeg,image/webp"+(png?",image/svg+xml":"");
+    function show(){pv.textContent="";var v=p[key]||"";if(v){var im=new Image();im.src=iconSrc(v);pv.appendChild(im)}else pv.textContent="—"}
+    up.onclick=function(){fi.click()};
+    fi.onchange=function(){var f=fi.files[0];fi.value="";if(!f)return;
+      readAny(f,max,png,function(r){p[key]=r.dataUrl;p["_"+key+"B64"]=r.b64;p["_"+key+"Ext"]=r.ext;show();say("msg","تم اختيار الصورة — اضغط حفظ ونشر","ok")})};
+    rm.onclick=function(){p[key]="";delete p["_"+key+"B64"];delete p["_"+key+"Ext"];show()};
+    row.appendChild(pv);row.appendChild(up);row.appendChild(rm);row.appendChild(fi);par.appendChild(row);show();
+  }
+  function drawPosters(){
+    var box=$("postersEd");box.textContent="";
+    if(!Array.isArray(S.cfg.posters))S.cfg.posters=[];
+    S.cfg.posters.forEach(function(p,i){
+      var d=document.createElement("div");d.className="link";
+      var h=document.createElement("label");h.className="sw";h.style.marginTop="0";
+      var cb=document.createElement("input");cb.type="checkbox";cb.checked=p.enabled!==false;cb.onchange=function(){p.enabled=cb.checked};
+      h.appendChild(cb);h.appendChild(document.createTextNode(" بوستر رقم "+(i+1)+" — إظهار"));d.appendChild(h);
+      pimg(d,p,"bg","صورة الخلفية (اختياري)",1200,false);
+      var dl=document.createElement("label");dl.textContent="تعتيم الخلفية لتوضيح الكتابة: "+(p.dim==null?45:p.dim)+"%";d.appendChild(dl);
+      var rg=document.createElement("input");rg.type="range";rg.min=0;rg.max=90;rg.step=5;rg.value=p.dim==null?45:p.dim;rg.style.width="100%";
+      rg.oninput=function(){p.dim=+rg.value;dl.textContent="تعتيم الخلفية لتوضيح الكتابة: "+rg.value+"%"};d.appendChild(rg);
+      pimg(d,p,"logoImg","صورة الشعار (اختياري، تُفضّل PNG شفاف)",400,true);
+      pfield(d,p,"logoText","نص الشعار (يظهر إذا لم ترفع صورة)","text");
+      pfield(d,p,"eyebrow","السطر الصغير فوق الرقم","text");
+      pfield(d,p,"big","الرقم / النص الكبير","text");
+      pfield(d,p,"sub","النص تحت الرقم","text");
+      pfield(d,p,"codeLabel","عنوان البرومكود","text");
+      pfield(d,p,"code","البرومكود (فارغ = إخفاء)","ltr");
+      pfield(d,p,"features","المميزات (حتى 4، كل سطر ميزة؛ لسطرين: العنوان|التفصيل)","ta",3);
+      pfield(d,p,"footer","سطر أسفل البوستر (اسم الموقع مثلاً)","text");
+      pfield(d,p,"url","رابط البوستر عند الضغط عليه (اختياري)","url");
+      var rl=document.createElement("label");rl.textContent="شكل البوستر";d.appendChild(rl);
+      var sel=document.createElement("select");[["1:1","مربّع"],["4:5","طولي"]].forEach(function(o){var op=document.createElement("option");op.value=o[0];op.textContent=o[1];sel.appendChild(op)});
+      sel.value=p.ratio==="4:5"?"4:5":"1:1";sel.onchange=function(){p.ratio=sel.value};d.appendChild(sel);
+      var ct=document.createElement("div");ct.className="row";ct.style.marginTop="12px";
+      function mk(t,cls,fn){var x=document.createElement("button");x.type="button";x.className=cls;x.textContent=t;x.onclick=fn;ct.appendChild(x)}
+      mk("⬆️","sec",function(){if(i>0){var t=S.cfg.posters[i];S.cfg.posters[i]=S.cfg.posters[i-1];S.cfg.posters[i-1]=t;drawPosters()}});
+      mk("⬇️","sec",function(){if(i<S.cfg.posters.length-1){var t=S.cfg.posters[i];S.cfg.posters[i]=S.cfg.posters[i+1];S.cfg.posters[i+1]=t;drawPosters()}});
+      mk("حذف","del",function(){if(confirm("حذف هذا البوستر؟")){S.cfg.posters.splice(i,1);drawPosters()}});
+      d.appendChild(ct);box.appendChild(d);
+    });
+  }
+  $("addPoster").onclick=function(){
+    if(!Array.isArray(S.cfg.posters))S.cfg.posters=[];
+    S.cfg.posters.push({id:"p"+Date.now().toString(36),enabled:true,ratio:"1:1",logoText:"SITE",logoImg:"",bg:"",dim:45,eyebrow:"في موقعنا",big:"+200ج",sub:"بونص عند التسجيل",codeLabel:"البرومكود:",code:"",features:"",footer:"",url:""});
+    drawPosters();
+  };
   function drawSup(){var b=$("supIcon");b.textContent="";if(!S.cfg.support)S.cfg.support={};b.appendChild(iconPicker(S.cfg.support))}
   function drawEmos(){
     var b=$("promoEmo");b.textContent="";
@@ -586,6 +702,12 @@ a{color:#8fb4ff}
       if(!/^https?:\/\//i.test(L[i].url||"")){say("msg","رابط القناة رقم "+(i+1)+" يجب أن يبدأ بـ https://","bad");return}
     }
     if(S.cfg.support.enabled&&!/^https?:\/\//i.test(S.cfg.support.url||"")){say("msg","رابط الدعم يجب أن يبدأ بـ https://","bad");return}
+    if(S.cfg.bonus.enabled&&!/^https?:\/\//i.test(S.cfg.bonus.url||"")){say("msg","رابط التسجيل يجب أن يبدأ بـ https://","bad");return}
+    if(S.cfg.qr.enabled&&!/^https?:\/\//i.test(S.cfg.qr.url||"")){say("msg","رابط QR يجب أن يبدأ بـ https://","bad");return}
+    for(var pv2=0;pv2<(S.cfg.posters||[]).length;pv2++){
+      var pu=(S.cfg.posters[pv2].url||"").trim();
+      if(pu&&!/^https?:\/\//i.test(pu)){say("msg","رابط البوستر رقم "+(pv2+1)+" يجب أن يبدأ بـ https://","bad");return}
+    }
     if(!S.cfg.adminUser)S.cfg.adminUser=S.login;
     if(S.cfg.adminUser.toLowerCase()!==S.login.toLowerCase()&&!confirm("أنت تغيّر يوزر الأدمن إلى «"+S.cfg.adminUser+"». بعد الحفظ لن يدخل اللوحة إلا هذا الحساب. متأكد؟"))return;
     if(S.cfg.visual==="logo"&&!S.pendingLogo&&!S.cfg.logo){say("msg","اختر ملف اللوجو أولاً أو اعرض الكرة","bad");return}
@@ -610,6 +732,20 @@ a{color:#8fb4ff}
       }
       S.cfg.phone.images=S.phoneImgs.map(function(x){return x.src});
       S.cfg.phone.speed=parseFloat(S.cfg.phone.speed)||3.5;
+      for(var pi2=0;pi2<S.cfg.posters.length;pi2++){
+        var po=S.cfg.posters[pi2];
+        ["bg","logoImg"].forEach(function(){});
+        var keys=["bg","logoImg"];
+        for(var ki=0;ki<keys.length;ki++){
+          var kk=keys[ki];
+          if(po["_"+kk+"B64"]){
+            var pth="assets/poster-"+(po.id||"p")+"-"+kk.toLowerCase()+"-"+Date.now().toString(36)+"."+po["_"+kk+"Ext"];
+            var rr=await putFile(pth,po["_"+kk+"B64"],"رفع صورة بوستر",null);
+            if(!rr.ok){say("msg","فشل رفع صورة البوستر ("+rr.status+")","bad");btn.disabled=false;return}
+            po[kk]=pth;delete po["_"+kk+"B64"];delete po["_"+kk+"Ext"];
+          }
+        }
+      }
       var its=S.cfg.links.concat([S.cfg.support]);
       for(var j=0;j<its.length;j++){
         var it=its[j];
